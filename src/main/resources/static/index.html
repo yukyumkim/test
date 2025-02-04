@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연애 상담 GPT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 60%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+        }
+        .chat-box {
+            flex: 2;
+            padding-right: 20px;
+        }
+        .history {
+            flex: 1;
+            border-left: 2px solid #ddd;
+            padding-left: 20px;
+        }
+        .input-box {
+            display: flex;
+            margin-top: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .response {
+            margin-top: 10px;
+            padding: 10px;
+            background: #eef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="chat-box">
+        <h2 style="text-align:center;">무엇을 도와드릴까요?</h2>
+        <div id="responses"></div>
+        <div class="input-box">
+            <input type="text" id="question" placeholder="질문을 입력하세요...">
+            <button onclick="generateResponse()">질문하기</button>
+        </div>
+    </div>
+    <div class="history">
+        <h3>질문 히스토리</h3>
+        <ul id="history-list"></ul>
+    </div>
+</div>
+
+<script>
+    async function generateResponse() {
+        const questionInput = document.getElementById("question");
+        const questionText = questionInput.value.trim();
+        if (!questionText) return;
+
+        // DB에 저장 요청
+        await fetch("http://localhost:8080/api/questions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: questionText })
+        });
+
+        // 화면 업데이트
+        const historyList = document.getElementById("history-list");
+        const listItem = document.createElement("li");
+        listItem.textContent = new Date().toLocaleDateString() + " - " + questionText;
+        historyList.prepend(listItem);
+
+        questionInput.value = "";
+    }
+</script>
+</body>
+</html>
